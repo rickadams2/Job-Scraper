@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 from Job import Job
+from datetime import date
 
 
 class IndeedScraper:
@@ -33,23 +34,28 @@ class IndeedScraper:
         """Retrieves html from provided url. Returns the important html containing all job information."""
         page = requests.get(url)
         soup = BeautifulSoup(page.content, "html.parser")
-        jobs_wrapper_div = soup.find(id="mosaic-provider-jobcards")
-        job_divs = jobs_wrapper_div.find_all('div', class_ = 'slider_container')
-        return job_divs
+        all_divs = soup.find_all(class_ = "jobtitle turnstileLink")
+        return all_divs
+
 
     def construct_job_objects(self, job_divs):
         """Returns a list of Job objects using the information provided within the html."""
         all_jobs = []
-        for job_div in job_divs:
+
+        """
+        NOTES FOR NEXT TIME.
+        <a> tag surrounds slider container. first get list of <a> links from mosaic-provider-jobcards,
+        then get other info from child element, 'slider container'.   
+        """
+
+
+        for i, job_div in enumerate(job_divs):
             # Extract relevant information.
+
             title = job_div.find('h2', class_='jobTitle').text.strip()
-            #print("title:", title)
             company_name = job_div.find('span', class_="companyName").text.strip()
-            #print("company_name:", company_name)
-            link = "https://indeed.com" + job_div.find('a')['href']
-            #print("link:", link)
-            date = job_div.find('span', class_='date').text.strip()
-            #print("date:", date)
+            link = "https://indeed.com" + job_div.find("a")["href"]
+            date = date.today()
             # Create a new Job object.
             all_jobs.append(Job(title, company_name, link, date))
 
