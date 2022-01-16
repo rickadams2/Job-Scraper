@@ -24,7 +24,7 @@ class IndeedScraper:
                     'explvl': 'entry_level',
                     'sort': 'date',
                     'limit': '50',
-                    'fromage': 'last'
+                    'fromage': '1'
                     }
         url = ('https://www.indeed.com/jobs?' + urllib.parse.urlencode(url_vars))
         print(url)
@@ -34,8 +34,8 @@ class IndeedScraper:
         """Retrieves html from provided url. Returns the important html containing all job information."""
         page = requests.get(url)
         soup = BeautifulSoup(page.content, "html.parser")
-        all_divs = soup.find_all(class_ = "jobtitle turnstileLink")
-        return all_divs
+        job_divs = soup.find_all(class_ = lambda value: value and value.startswith("tapItem fs-unmask result"))
+        return job_divs
 
 
     def construct_job_objects(self, job_divs):
@@ -49,15 +49,19 @@ class IndeedScraper:
         """
 
 
-        for i, job_div in enumerate(job_divs):
+        for job_div in job_divs:
             # Extract relevant information.
 
-            title = job_div.find('h2', class_='jobTitle').text.strip()
+            title = job_div.find('h2', class_='jobTitle').text.strip()[3:]
+            print("title:", title)
             company_name = job_div.find('span', class_="companyName").text.strip()
-            link = "https://indeed.com" + job_div.find("a")["href"]
-            date = date.today()
+            print("company_name:", company_name)
+            link = "https://indeed.com" + job_div["href"]
+            print("link:", link)
+            job_date = date.today()
+            print("date", job_date)
             # Create a new Job object.
-            all_jobs.append(Job(title, company_name, link, date))
+            all_jobs.append(Job(title, company_name, link, job_date))
 
         print("Created", len(all_jobs), "job objects.")
         return all_jobs
