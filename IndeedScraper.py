@@ -17,8 +17,16 @@ class IndeedScraper:
 
     def construct_url(self, job_title, job_location):
         """Constructs an Indeed url using the provided variables and returns it."""
-        url_vars = {'q': job_title, 'l': job_location, 'fromage': 'last', 'sort': 'date'}
+        url_vars = {'q': job_title,
+                    'l': job_location,
+                    'radius': '15',
+                    'explvl': 'entry_level',
+                    'sort': 'date',
+                    'limit': '50',
+                    'fromage': 'last'
+                    }
         url = ('https://www.indeed.com/jobs?' + urllib.parse.urlencode(url_vars))
+        print(url)
         return url
 
     def get_all_job_divs(self, url):
@@ -35,9 +43,13 @@ class IndeedScraper:
         for job_div in job_divs:
             # Extract relevant information.
             title = job_div.find('h2', class_='jobTitle').text.strip()
+            #print("title:", title)
             company_name = job_div.find('span', class_="companyName").text.strip()
+            #print("company_name:", company_name)
             link = "https://indeed.com" + job_div.find('a')['href']
+            #print("link:", link)
             date = job_div.find('span', class_='date').text.strip()
+            #print("date:", date)
             # Create a new Job object.
             all_jobs.append(Job(title, company_name, link, date))
 
