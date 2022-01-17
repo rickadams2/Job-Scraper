@@ -1,19 +1,27 @@
 from IndeedScraper import IndeedScraper
 import pandas as pd
 
+from LinkedInScraper import LinkedInScraper
+
 if __name__ == "__main__":
-    scraper = IndeedScraper("software", "San Francisco, CA")
-    #Initialise dfs
-    old_df = pd.DataFrame()
-    new_df = pd.DataFrame()
 
+    all_dfs = []
+
+    indeed = IndeedScraper("software", "San Francisco, CA")
+    all_dfs.append(indeed.data)
+
+    linkedin = LinkedInScraper()
+    all_dfs.append(linkedin.data)
+
+    old_df = None
     try:
-        print("Entered try")
         old_df = pd.read_excel('job-data.xlsx')
-        new_df = scraper.data.append(old_df, ignore_index=True)
-        new_df.drop(new_df.columns[[4]], axis=1, inplace=True)
     except:
-        print("Entered except")
-        new_df = scraper.data
+        old_df = pd.DataFrame([], columns=['Title', 'Company', 'Source', 'Link', 'Date'])
 
-    new_df.to_excel('job-data.xlsx')
+    all_dfs.append(old_df)
+
+    new_df = pd.concat(all_dfs)
+    new_df.drop_duplicates(keep='last', subset=['Link'], inplace=True)
+
+    new_df.to_excel('job-data.xlsx', index = False)

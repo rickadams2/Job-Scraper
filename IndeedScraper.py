@@ -2,6 +2,8 @@ import urllib
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+
+from ScraperUtil import ScraperUtil
 from Job import Job
 from datetime import date
 
@@ -14,7 +16,7 @@ class IndeedScraper:
         url = self.construct_url(job_title, job_location)
         job_divs = self.get_all_job_divs(url)
         jobs = self.construct_job_objects(job_divs)
-        self.data = self.construct_dataframe(jobs)
+        self.data = ScraperUtil.construct_dataframe(jobs)
 
     def construct_url(self, job_title, job_location):
         """Constructs an Indeed url using the provided variables and returns it."""
@@ -27,7 +29,6 @@ class IndeedScraper:
                     'fromage': '1'
                     }
         url = ('https://www.indeed.com/jobs?' + urllib.parse.urlencode(url_vars))
-        print(url)
         return url
 
     def get_all_job_divs(self, url):
@@ -53,30 +54,14 @@ class IndeedScraper:
             # Extract relevant information.
 
             title = job_div.find('h2', class_='jobTitle').text.strip()[3:]
-            print("title:", title)
             company_name = job_div.find('span', class_="companyName").text.strip()
-            print("company_name:", company_name)
             link = "https://indeed.com" + job_div["href"]
-            print("link:", link)
             job_date = date.today()
-            print("date", job_date)
             # Create a new Job object.
-            all_jobs.append(Job(title, company_name, link, job_date))
+            all_jobs.append(Job(title, company_name, "Indeed", link, job_date))
 
-        print("Created", len(all_jobs), "job objects.")
+        print("Created", len(all_jobs), "job objects from Indeed.")
         return all_jobs
-
-    def construct_dataframe(self, all_jobs):
-        """Extracts data from list of Job objects, and returns a dataframe."""
-        all_job_data = []
-
-        for job in all_jobs:
-            job_data = [job.title, job.company_name, job.link, job.date]
-            all_job_data.append(job_data)
-
-        df = pd.DataFrame(all_job_data, columns=['Title', 'Company', 'Link', 'Date'])
-        print("Done")
-        return df
 
 
 
