@@ -11,8 +11,6 @@ from datetime import date
 # TODO: Doc Comments.
 class IndeedScraper:
 
-    data = None
-
     def __init__(self, job_title, job_location):
         url = self.construct_url(job_title, job_location)
         job_divs = self.get_all_job_divs(url)
@@ -42,7 +40,6 @@ class IndeedScraper:
         soup = BeautifulSoup(page.content, "html.parser")
         job_divs = soup.find_all(class_ = lambda value: value and value.startswith("tapItem fs-unmask result"))
         return job_divs
-
 
     def construct_job_objects(self, job_divs):
         """Returns a list of Job objects using the information provided within the html."""
