@@ -7,7 +7,8 @@ from ScraperUtil import ScraperUtil
 from Job import Job
 from datetime import date
 
-
+# TODO: IndeedScraper implements Scraper
+# TODO: Doc Comments.
 class IndeedScraper:
 
     data = pd.DataFrame()

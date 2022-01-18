@@ -6,6 +6,7 @@ class Job:
     link = ""
     date = ""
 
+
     def __init__(self, title="N/A", company_name="N/A", source = "N/A", link="N/A", date="N/A"):
         self.title = title
         self.company_name = company_name
@@ -18,7 +19,7 @@ class Job:
                     "company_name" : self.company_name,
                     "source" : self.source,
                     "link" : self.link,
-                    "date" : self.date
+                    "date" : self.date,
                     })
 
 
