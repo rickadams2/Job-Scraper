@@ -11,7 +11,7 @@ from datetime import date
 # TODO: Doc Comments.
 class IndeedScraper:
 
-    data = pd.DataFrame()
+    data = None
 
     def __init__(self, job_title, job_location):
         url = self.construct_url(job_title, job_location)
@@ -21,6 +21,8 @@ class IndeedScraper:
 
     def construct_url(self, job_title, job_location):
         """Constructs an Indeed url using the provided variables and returns it."""
+
+        # Create a dictionary mapping each variable in the url to a value.
         url_vars = {'q': job_title,
                     'l': job_location,
                     'radius': '15',
@@ -29,6 +31,8 @@ class IndeedScraper:
                     'limit': '50',
                     'fromage': '1'
                     }
+
+        # Construct and return the url.
         url = ('https://www.indeed.com/jobs?' + urllib.parse.urlencode(url_vars))
         return url
 
@@ -44,35 +48,15 @@ class IndeedScraper:
         """Returns a list of Job objects using the information provided within the html."""
         all_jobs = []
 
-        """
-        NOTES FOR NEXT TIME.
-        <a> tag surrounds slider container. first get list of <a> links from mosaic-provider-jobcards,
-        then get other info from child element, 'slider container'.   
-        """
-
-
         for job_div in job_divs:
             # Extract relevant information.
-
             title = job_div.find('h2', class_='jobTitle').text.strip()[3:]
             company_name = job_div.find('span', class_="companyName").text.strip()
             link = "https://indeed.com" + job_div["href"]
             job_date = date.today()
+
             # Create a new Job object.
             all_jobs.append(Job(title, company_name, "Indeed", link, job_date))
 
         print("Created", len(all_jobs), "job objects from Indeed.")
         return all_jobs
-
-
-
-
-
-
-
-
-
-
-
-
-

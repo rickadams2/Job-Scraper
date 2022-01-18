@@ -1,18 +1,14 @@
-import pandas as pd
+
 
 class Job:
-    title = ""
-    company_name = ""
-    link = ""
-    date = ""
-
 
     def __init__(self, title="N/A", company_name="N/A", source = "N/A", link="N/A", date="N/A"):
         self.title = title
         self.company_name = company_name
+        self.source = source
         self.link = link
         self.date = date
-        self.source = source
+
 
     def __str__(self):
         return str({"title" : self.title,

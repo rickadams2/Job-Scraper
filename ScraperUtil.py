@@ -3,41 +3,43 @@ import pandas as pd
 
 class ScraperUtil:
 
-    # TODO: Doc Comments.
-
     @staticmethod
     def construct_dataframe(all_jobs):
-
-        print("Type: ", type(all_jobs))
         """Extracts data from list of Job objects, and returns a dataframe."""
         all_job_data = []
 
+        # Here we create a list of lists. each nested list represents one row in the dataframe.
         for job in all_jobs:
             job_data = [job.title, job.company_name, job.source, job.link, job.date]
             all_job_data.append(job_data)
 
-        df = pd.DataFrame(all_job_data, columns=['Title', 'Company', 'Source', 'Link', 'Date Posted'])
-        df['Applied'] = False
-        df['Date Applied'] = ""
+        # Create the dataframe with the above information.
+        dataframe = pd.DataFrame(all_job_data, columns=['Title', 'Company', 'Source', 'Link', 'Date Posted'])
 
-        return df
+        # Add additional rows to the dataframe, containing default values.
+        dataframe['Applied'] = False
+        dataframe['Date Applied'] = ""
 
-    @staticmethod
-    def drop_duplicates(df):
-        # TODO: implement this.
-        pass
-
-
+        return dataframe
 
     @staticmethod
-    def remove_rows_with_keywords(df, keywords):
-        # TODO: Assertions
+    def remove_rows_with_keywords(dataframe, keywords):
+        """
+        Removes all rows from a given DataFrame where the title contains any of the provided keywords.
+        Returns the filtered DataFrame.
+        """
+
+        # First we convert the list of keywords into a delimited string. The string
+        # is a regex in the form "(?i)keyword1|keyword2|...|keyword3".
+        # (?i) ensures the contains() function is case-insensitive.
+
         delimited_keywords = "(?i)" + str("|".join(keywords)).lower()
 
-        print("delimited_keywords:", delimited_keywords)
+        # Selects all rows that don't match the above regex.
+        dataframe = dataframe[dataframe["Title"].str.contains(delimited_keywords) == False]
 
-        df = df[df["Title"].str.contains(delimited_keywords) == False]
-        return df
+        #Return the filtered dataframe.
+        return dataframe
 
 
 

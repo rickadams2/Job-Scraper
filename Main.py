@@ -35,7 +35,7 @@ if __name__ == "__main__":
     linkedin = None
     try:
         linkedin = LinkedInScraper()
-        print(linkedin.data.shape[0], "jobs loaded from Linkedin.")
+        print(linkedin.data.shape[0], "jobs loaded from LinkedIn.")
     except Exception as e:
         print("ERROR : " + str(e))
 
