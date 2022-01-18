@@ -15,17 +15,17 @@ class IndeedScraper:
     def __init__(self):
         self.data = ScraperUtil.construct_dataframe(all_jobs = [])
 
-    def scrape(self, job_title, job_location):
-        url = self.construct_url(job_title, job_location)
+    def scrape(self, search_keywords, job_location):
+        url = self.construct_url(search_keywords, job_location)
         job_divs = self.get_all_job_divs(url)
         jobs = self.construct_job_objects(job_divs)
         self.data = ScraperUtil.construct_dataframe(jobs)
 
-    def construct_url(self, job_title, job_location):
+    def construct_url(self, search_keywords, job_location):
         """Constructs an Indeed url using the provided variables and returns it."""
 
         # Create a dictionary mapping each variable in the url to a value.
-        url_vars = {'q': job_title,
+        url_vars = {'q': search_keywords,
                     'l': job_location,
                     'radius': '15',
                     'explvl': 'entry_level',
@@ -36,6 +36,7 @@ class IndeedScraper:
 
         # Construct and return the url.
         url = ('https://www.indeed.com/jobs?' + urllib.parse.urlencode(url_vars))
+
         print("Sourcing Indeed data from:", url)
         return url
 

@@ -13,11 +13,12 @@ if __name__ == "__main__":
         config = json.load(jsonfile)
         print("Read config successfully.")
 
-    search_term = config["search_term"]
-    print("search_term:", search_term)
+    search_keywords = config["search_keywords"]
     location = config["location"]
-    print("location:", location)
     ignore_keywords = config['ignore_keywords']
+
+    print("search_keywords:", search_keywords)
+    print("location:", location)
     print("ignore_keywords:", ignore_keywords)
 
     all_dfs = []
@@ -27,7 +28,7 @@ if __name__ == "__main__":
     # Attempt to scrape Indeed.
     indeed = IndeedScraper()
     try:
-        indeed.scrape(search_term, location)
+        indeed.scrape(search_keywords, location)
         indeed.data = ScraperUtil.remove_rows_with_keywords(indeed.data, ignore_keywords)
         print(indeed.data.shape[0], "jobs loaded from Indeed.")
     except Exception as e:
@@ -36,8 +37,11 @@ if __name__ == "__main__":
     # Attempt to scrape LinkedIn.
     linkedin = LinkedInScraper()
     #try:
-    linkedin.scrape(search_term, location)
+    linkedin.scrape(search_keywords, location)
     linkedin.data = ScraperUtil.remove_rows_with_keywords(linkedin.data, ignore_keywords)
+    #except Exception as e:
+        #print("ERROR : " + str(e))
+
     print(linkedin.data.shape[0], "jobs loaded from LinkedIn.")
 
 

@@ -28,12 +28,12 @@ class LinkedInScraper:
         self.data = ScraperUtil.construct_dataframe(jobs)
 
     # TODO: Update method so url is changed according to provided variables.
-    def construct_url(self, job_title, job_location):
+    def construct_url(self, search_keywords, job_location):
 
         """Constructs a LinkedIn url using the provided variables and returns it."""
 
         # Create a dictionary mapping each variable in the url to a value.
-        url_vars = {'keywords': job_title,
+        url_vars = {'keywords': search_keywords,
                     'location' : job_location,
                     'locationId' : "",
                     'geoId': '90000084',
@@ -55,7 +55,7 @@ class LinkedInScraper:
         print(no_of_jobs, "jobs expected to be loaded from LinkedIn.")
 
         # Scroll page slowly to ensure all jobs are loaded into HTML doc.
-        self.scroll_page(web_driver)
+        # self.scroll_page(web_driver)
 
         job_lists = web_driver.find_element_by_class_name('jobs-search__results-list')
         jobs = job_lists.find_elements_by_tag_name('li')  # return a list
@@ -67,27 +67,35 @@ class LinkedInScraper:
         return soup
 
     def scroll_page(self, web_driver):
-        """Automatically scrolls the webpage slowly, to ensure all job information is loaded into the html."""
-        # Help from:
-        # https://medium.com/analytics-vidhya/using-python-and-selenium-to-scrape-infinite-scroll-web-pages-825d12c24ec7
+        """
+        Automatically scrolls the webpage one screen at a time,
+        to ensure all job information is loaded into the html.
 
+        Help from:
+        https://medium.com/analytics-vidhya/using-python-and-selenium-to-scrape-infinite-scroll-web-pages-825d12c24ec7
+        """
+
+
+        # Maximise window so there are no hidden elements.
         web_driver.maximize_window()
+
+        # Wait 5 seconds for the page to load completely.
         time.sleep(5)
-        scroll_pause_time = 2
+        scroll_pause_time = 2 # The amount of time before the page is scrolled by one screen.
         screen_height = web_driver.execute_script("return window.screen.height;")  # get the screen height of the web
-        i = 1
+        total_screens_scrolled = 1
 
         while True:
             # scroll one screen height each time
             web_driver.execute_script(
-                "window.scrollTo(0, {screen_height}*{i});".format(screen_height=screen_height, i=i))
-            i += 1
+                "window.scrollTo(0, {screen_height}*{i});".format(screen_height=screen_height, i=total_screens_scrolled))
+            total_screens_scrolled += 1
             time.sleep(scroll_pause_time)
             # update scroll height each time after scrolled, as the scroll height can change after we scrolled the page
             scroll_height = web_driver.execute_script("return document.body.scrollHeight;")
             # Break the loop when the height we need to scroll to is larger than the total scroll height
 
-            if (screen_height * i) > scroll_height:
+            if (screen_height * total_screens_scrolled) > scroll_height:
                 try:
                     web_driver.find_element_by_xpath("/html/body/div[1]/div/main/section[2]/button").click()
                 except:
@@ -96,7 +104,6 @@ class LinkedInScraper:
 
 
     def construct_job_objects(self, page_source):
-        # TODO: Assertions
         all_jobs = []
         job_titles = []
         company_names = []
@@ -110,12 +117,14 @@ class LinkedInScraper:
             job_titles.append(title.text.strip())
 
         # Get list of company names and add them to the list.
-        company_names_html = page_source.find_all(
-            'h4', {'class': 'base-search-card__subtitle'})
-
+        company_names_html = page_source.find_all('h4', {'class': 'base-search-card__subtitle'})
         for name in company_names_html:
             company_names.append(name.text.strip())
-            links.append(name.find('a')['href'])
+
+        # Get list of job links and add them to the list.
+        links_html = page_source.find_all('a', {'class': "base-card__full-link"})
+        for link in links_html:
+            links.append(link['href'])
 
         # Create job objects using saved information.
         for i in range(len(job_titles)):
