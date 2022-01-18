@@ -27,6 +27,7 @@ if __name__ == "__main__":
     indeed = None
     try:
         indeed = IndeedScraper(search_term, location)
+        indeed.data = ScraperUtil.remove_rows_with_keywords(indeed.data, ignore_keywords)
         print(indeed.data.shape[0], "jobs loaded from Indeed.")
     except Exception as e:
         print("ERROR : " + str(e))
@@ -35,6 +36,7 @@ if __name__ == "__main__":
     linkedin = None
     try:
         linkedin = LinkedInScraper()
+        linkedin.data = ScraperUtil.remove_rows_with_keywords(linkedin.data, ignore_keywords)
         print(linkedin.data.shape[0], "jobs loaded from LinkedIn.")
     except Exception as e:
         print("ERROR : " + str(e))
@@ -51,7 +53,5 @@ if __name__ == "__main__":
     all_dfs.append(old_df)
 
     new_df = pd.concat(all_dfs)
-    print("Rows before dropping duplicates:", new_df.shape[0])
     new_df.drop_duplicates(keep='last', subset=['Title', 'Company', 'Link'], inplace=True)
-    print("Rows after dropping duplicates:", new_df.shape[0])
     new_df.to_excel('job-data.xlsx', index=False)

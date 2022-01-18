@@ -35,8 +35,12 @@ class ScraperUtil:
 
         delimited_keywords = "(?i)" + str("|".join(keywords)).lower()
 
+        total_rows_before = dataframe.shape[0]
         # Selects all rows that don't match the above regex.
         dataframe = dataframe[dataframe["Title"].str.contains(delimited_keywords) == False]
+        total_rows_after = total_rows_before - dataframe.shape[0]
+        total_rows_removed = total_rows_before - total_rows_after
+        print(total_rows_removed, "duplicate rows were removed from dataframe.")
 
         #Return the filtered dataframe.
         return dataframe

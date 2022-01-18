@@ -26,10 +26,10 @@ class LinkedInScraper:
 
     # TODO: Update method so url is changed according to provided variables.
     def construct_url(self, job_title, job_location):
-        return "https://www.linkedin.com/jobs/search?keywords=Software&location=San%20Francisco%20Bay%20Area&locationId=&geoId=90000084&f_TPR=r86400&f_E=1%2C2&position=1&pageNum=50"
+        return "https://www.linkedin.com/jobs/search?keywords=Software&location=San%20Francisco%20Bay%20Area&locationId=&geoId=90000084&f_TPR=r86400&f_E=1%2C2&position=1"
 
     def load_entire_page(self, url):
-        web_driver = webdriver.Chrome("C:/Users/ediep/anaconda3/Lib/site-packages/selenium/webdriver/chrome/chromedriver")
+        web_driver = webdriver.Chrome("./chromedriver")
         web_driver.get(url)
 
         no_of_jobs = int(web_driver.find_element_by_css_selector('h1 > span').get_attribute('innerText'))
@@ -49,6 +49,7 @@ class LinkedInScraper:
         return soup
 
     def scroll_page(self, web_driver):
+        """Automatically scrolls the webpage slowly, to ensure all job information is loaded into the html."""
         # Help from:
         # https://medium.com/analytics-vidhya/using-python-and-selenium-to-scrape-infinite-scroll-web-pages-825d12c24ec7
 
@@ -67,8 +68,13 @@ class LinkedInScraper:
             # update scroll height each time after scrolled, as the scroll height can change after we scrolled the page
             scroll_height = web_driver.execute_script("return document.body.scrollHeight;")
             # Break the loop when the height we need to scroll to is larger than the total scroll height
+
             if (screen_height) * i > scroll_height:
-                break
+                try:
+                    web_driver.find_element_by_xpath("/html/body/div[1]/div/main/section[2]/button").click()
+                except:
+                    break
+
 
 
     def construct_job_objects(self, page_source):
@@ -78,16 +84,14 @@ class LinkedInScraper:
         company_names = []
         links = []
 
-        # Get list of job titles.
+        # Get list of job titles and add them to the list.
         job_title_html = page_source.find_all(
             'h3', {'class': 'base-search-card__title'})
 
         for title in job_title_html:
             job_titles.append(title.text.strip())
 
-
-        #Get list of companies.
-
+        # Get list of company names and add them to the list.
         company_names_html = page_source.find_all(
             'h4', {'class': 'base-search-card__subtitle'})
 
@@ -95,6 +99,7 @@ class LinkedInScraper:
             company_names.append(name.text.strip())
             links.append(name.find('a')['href'])
 
+        # Create job objects using saved information.
         for i in range(len(job_titles)):
             all_jobs.append(Job(job_titles[i], company_names[i], "LinkedIn", links[i], date.today()))
 
