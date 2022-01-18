@@ -1,7 +1,8 @@
-from IndeedScraper import IndeedScraper
-import pandas as pd
 import json
-from configparser import ConfigParser
+
+import pandas as pd
+
+from IndeedScraper import IndeedScraper
 from LinkedInScraper import LinkedInScraper
 from ScraperUtil import ScraperUtil
 
@@ -24,31 +25,30 @@ if __name__ == "__main__":
     # Create scraper objects using variables from config file.
 
     # Attempt to scrape Indeed.
-    indeed = None
+    indeed = IndeedScraper()
     try:
-        indeed = IndeedScraper(search_term, location)
+        indeed.scrape(search_term, location)
         indeed.data = ScraperUtil.remove_rows_with_keywords(indeed.data, ignore_keywords)
         print(indeed.data.shape[0], "jobs loaded from Indeed.")
     except Exception as e:
         print("ERROR : " + str(e))
 
     # Attempt to scrape LinkedIn.
-    linkedin = None
-    try:
-        linkedin = LinkedInScraper()
-        linkedin.data = ScraperUtil.remove_rows_with_keywords(linkedin.data, ignore_keywords)
-        print(linkedin.data.shape[0], "jobs loaded from LinkedIn.")
-    except Exception as e:
-        print("ERROR : " + str(e))
+    linkedin = LinkedInScraper()
+    #try:
+    linkedin.scrape(search_term, location)
+    linkedin.data = ScraperUtil.remove_rows_with_keywords(linkedin.data, ignore_keywords)
+    print(linkedin.data.shape[0], "jobs loaded from LinkedIn.")
+
 
     all_dfs.append(indeed.data)
     all_dfs.append(linkedin.data)
 
-    old_df = None
+    old_df = ScraperUtil.construct_dataframe([])
     try:
         old_df = pd.read_excel('job-data.xlsx')
     except:
-        old_df = ScraperUtil.construct_dataframe([])
+        print("job-data.xlsx doesn't exist yet. Creating new file.")
 
     all_dfs.append(old_df)
 

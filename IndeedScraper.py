@@ -1,17 +1,21 @@
 import urllib
+from datetime import date
+
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
 
-from ScraperUtil import ScraperUtil
 from Job import Job
-from datetime import date
+from ScraperUtil import ScraperUtil
+
 
 # TODO: IndeedScraper implements Scraper
 # TODO: Doc Comments.
 class IndeedScraper:
 
-    def __init__(self, job_title, job_location):
+    def __init__(self):
+        self.data = ScraperUtil.construct_dataframe(all_jobs = [])
+
+    def scrape(self, job_title, job_location):
         url = self.construct_url(job_title, job_location)
         job_divs = self.get_all_job_divs(url)
         jobs = self.construct_job_objects(job_divs)
@@ -32,6 +36,7 @@ class IndeedScraper:
 
         # Construct and return the url.
         url = ('https://www.indeed.com/jobs?' + urllib.parse.urlencode(url_vars))
+        print("Sourcing Indeed data from:", url)
         return url
 
     def get_all_job_divs(self, url):
@@ -47,6 +52,8 @@ class IndeedScraper:
 
         for job_div in job_divs:
             # Extract relevant information.
+
+            # We are stripping the "new" from the front of the title.
             title = job_div.find('h2', class_='jobTitle').text.strip()[3:]
             company_name = job_div.find('span', class_="companyName").text.strip()
             link = "https://indeed.com" + job_div["href"]

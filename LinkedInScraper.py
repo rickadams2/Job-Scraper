@@ -1,38 +1,57 @@
-from selenium import webdriver
-from bs4 import BeautifulSoup
 import time
 import urllib
-import requests
-from bs4 import BeautifulSoup
-import pandas as pd
-
-from ScraperUtil import ScraperUtil
-from Job import Job
 from datetime import date
-import time
+
+from bs4 import BeautifulSoup
 from selenium import webdriver
+
+from Job import Job
+from ScraperUtil import ScraperUtil
+
 
 # TODO: LinkedInScraper implements Scraper
 # TODO: Doc Comments.
 
 class LinkedInScraper:
 
-    data = pd.DataFrame()
     def __init__(self):
-        url = self.construct_url("Software Engineer", "San Francisco Bay Area")
+        self.data = ScraperUtil.construct_dataframe(all_jobs = [])
+
+    def scrape(self, job_title, job_location):
+        print("Entering construct_url()")
+        url = self.construct_url(job_title, job_location)
+        print("Entering load_entire_page()")
         page_source = self.load_entire_page(url)
+        print("Entering construct_job_objects()")
         jobs = self.construct_job_objects(page_source)
+        print("constructing dataframe")
         self.data = ScraperUtil.construct_dataframe(jobs)
 
     # TODO: Update method so url is changed according to provided variables.
     def construct_url(self, job_title, job_location):
-        return "https://www.linkedin.com/jobs/search?keywords=Software&location=San%20Francisco%20Bay%20Area&locationId=&geoId=90000084&f_TPR=r86400&f_E=1%2C2&position=1"
+
+        """Constructs a LinkedIn url using the provided variables and returns it."""
+
+        # Create a dictionary mapping each variable in the url to a value.
+        url_vars = {'keywords': job_title,
+                    'location' : job_location,
+                    'locationId' : "",
+                    'geoId': '90000084',
+                    'f_TPR' : 'r86400', #Ensures job listings are from the last 24 hours.
+                    'f_E' : '1,2',
+                    'position' : '1'
+                    }
+
+        # Construct and return the url.
+        url = ('https://www.linkedin.com/jobs/search?' + urllib.parse.urlencode(url_vars))
+        print("Sourcing LinkedIn data from:", url)
+        return url
 
     def load_entire_page(self, url):
         web_driver = webdriver.Chrome("./chromedriver")
         web_driver.get(url)
 
-        no_of_jobs = int(web_driver.find_element_by_css_selector('h1 > span').get_attribute('innerText'))
+        no_of_jobs = web_driver.find_element_by_css_selector('h1 > span').get_attribute('innerText')
         print(no_of_jobs, "jobs expected to be loaded from LinkedIn.")
 
         # Scroll page slowly to ensure all jobs are loaded into HTML doc.
@@ -41,7 +60,6 @@ class LinkedInScraper:
         job_lists = web_driver.find_element_by_class_name('jobs-search__results-list')
         jobs = job_lists.find_elements_by_tag_name('li')  # return a list
 
-        # TODO: Fix bug where not all jobs are being loaded from linkedin
         print(len(jobs), "jobs loaded from LinkedIn.")
 
         job_src = web_driver.page_source
@@ -69,7 +87,7 @@ class LinkedInScraper:
             scroll_height = web_driver.execute_script("return document.body.scrollHeight;")
             # Break the loop when the height we need to scroll to is larger than the total scroll height
 
-            if (screen_height) * i > scroll_height:
+            if (screen_height * i) > scroll_height:
                 try:
                     web_driver.find_element_by_xpath("/html/body/div[1]/div/main/section[2]/button").click()
                 except:

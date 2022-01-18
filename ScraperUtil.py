@@ -17,7 +17,8 @@ class ScraperUtil:
         dataframe = pd.DataFrame(all_job_data, columns=['Title', 'Company', 'Source', 'Link', 'Date Posted'])
 
         # Add additional rows to the dataframe, containing default values.
-        dataframe['Applied'] = False
+        dataframe['Will Apply'] = ""
+        dataframe['Applied'] = ""
         dataframe['Date Applied'] = ""
 
         return dataframe
