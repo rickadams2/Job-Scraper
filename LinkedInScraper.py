@@ -48,7 +48,7 @@ class LinkedInScraper:
 
     def experience_switch(self, experience):
         """Converts the provided experience string to its corresponding experience url var."""
-        if experience == "entry":
+        if experience == "junior":
             return "1,2"
         elif experience == "mid":
             return "3,4"

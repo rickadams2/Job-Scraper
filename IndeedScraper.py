@@ -45,7 +45,7 @@ class IndeedScraper:
 
     def experience_switch(self, experience):
         """Converts the provided experience string to its corresponding experience url var."""
-        if experience == "entry":
+        if experience == "junior":
             return "entry_level"
         elif experience == "mid":
             return "mid_level"

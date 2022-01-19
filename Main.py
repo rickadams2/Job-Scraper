@@ -17,8 +17,8 @@ if __name__ == "__main__":
     location = config["location"]
     ignore_keywords = config['ignore_keywords']
     experience = config['experience'].lower()
-    if experience != "entry" or experience != "mid" or experience != "senior":
-        print("Warning: Experience value in 'config.json' is invalid. please choose either 'Entry', 'Mid', "
+    if experience != "junior" or experience != "mid" or experience != "senior":
+        print("Warning: Experience value in 'config.json' is invalid. please choose either 'Junior', 'Mid', "
               "or 'Senior'. Jobs of all experience levels will be included in this search.")
 
     print("search_keywords=", search_keywords)
