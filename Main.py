@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     new_dataframe = pd.concat(all_dataframes)
     length_before = new_dataframe.shape[0]
-    new_dataframe.drop_duplicates(keep='first', subset=['Title', 'Company', 'Source', 'Date Posted'], inplace=True)
+    new_dataframe.drop_duplicates(keep='last', subset=['Title', 'Company', 'Source', 'Date Posted'], inplace=True)
     length_after = new_dataframe.shape[0]
     total_duplicates = length_before - length_after
     print("Total duplicates dropped:", total_duplicates)

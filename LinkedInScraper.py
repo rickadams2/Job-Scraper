@@ -119,24 +119,19 @@ class LinkedInScraper:
         """Attempts to extract all information from job_div to create job object.
         If any expected tags are missing, the missing field is represented as 'N/A'. """
 
-        # Initialise fields.
-        job_title = "N/A"
-        company_name = "N/A"
-        link = "N/A"
-
         # Attempt to extract each piece of information.
         try:
             job_title = job_div.find('h3', {'class': 'base-search-card__title'}).text.strip()
         except:
-            pass
+            job_title = "N/A"
         try:
             company_name = job_div.find('h4', {'class': 'base-search-card__subtitle'}).text.strip()
         except:
-            pass
+            company_name = "N/A"
         try:
             link = job_div.find('a', {'class': "base-card__full-link"})['href']
         except:
-            pass
+            link = "N/A"
 
         # All information possible extracted. Return the new Job object.
         return Job(job_title, company_name, "LinkedIn", link, str(date.today()))
