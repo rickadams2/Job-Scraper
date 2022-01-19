@@ -13,7 +13,7 @@ from ScraperUtil import ScraperUtil
 class IndeedScraper:
 
     def __init__(self):
-        self.data = ScraperUtil.construct_dataframe(all_jobs = [])
+        self.data = ScraperUtil.construct_dataframe(all_jobs=[])
 
     def scrape(self, search_keywords, job_location):
         url = self.construct_url(search_keywords, job_location)
@@ -44,7 +44,7 @@ class IndeedScraper:
         """Retrieves html from provided url. Returns the important html containing all job information."""
         page = requests.get(url)
         soup = BeautifulSoup(page.content, "html.parser")
-        job_divs = soup.find_all(class_ = lambda value: value and value.startswith("tapItem fs-unmask result"))
+        job_divs = soup.find_all(class_=lambda value: value and value.startswith("tapItem fs-unmask result"))
         return job_divs
 
     def construct_job_objects(self, job_divs):
@@ -58,7 +58,7 @@ class IndeedScraper:
             title = job_div.find('h2', class_='jobTitle').text.strip()[3:]
             company_name = job_div.find('span', class_="companyName").text.strip()
             link = "https://indeed.com" + job_div["href"]
-            job_date = date.today()
+            job_date = str(date.today())
 
             # Create a new Job object.
             all_jobs.append(Job(title, company_name, "Indeed", link, job_date))

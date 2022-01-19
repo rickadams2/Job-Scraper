@@ -43,8 +43,5 @@ class ScraperUtil:
         total_rows_removed = dataframe.shape[0] - new_dataframe.shape[0]
         print(total_rows_removed, "jobs were removed because they contain filter keywords.")
 
-        #Return the filtered dataframe.
+        # Return the filtered dataframe.
         return new_dataframe
-
-
-
