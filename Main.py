@@ -28,8 +28,6 @@ if __name__ == "__main__":
 
     all_dataframes = []
 
-    # Create scraper objects using variables from config file.
-
     # Attempt to scrape Indeed.
     indeed = IndeedScraper()
     try:
@@ -37,12 +35,15 @@ if __name__ == "__main__":
         indeed.data = ScraperUtil.remove_rows_with_keywords(indeed.data, ignore_keywords)
         print(indeed.data.shape[0], "jobs loaded from Indeed.")
     except Exception as e:
-        print("ERROR : " + str(e))
+        print("Error loading jobs from Indeed: " + str(e))
 
     # Attempt to scrape LinkedIn.
     linkedin = LinkedInScraper()
-    linkedin.scrape(search_keywords, location, experience)
-    linkedin.data = ScraperUtil.remove_rows_with_keywords(linkedin.data, ignore_keywords)
+    try:
+        linkedin.scrape(search_keywords, location, experience)
+        linkedin.data = ScraperUtil.remove_rows_with_keywords(linkedin.data, ignore_keywords)
+    except Exception as e:
+        print("Error loading jobs from LinkedIn: " + str(e))
 
     print(linkedin.data.shape[0], "jobs loaded from LinkedIn.")
 
@@ -64,3 +65,5 @@ if __name__ == "__main__":
     total_duplicates = length_before - length_after
     print("Total duplicates dropped:", total_duplicates)
     new_dataframe.to_excel('job-data.xlsx', index=False)
+
+
