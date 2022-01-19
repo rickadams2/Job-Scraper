@@ -17,9 +17,9 @@ class LinkedInScraper:
     def __init__(self):
         self.data = ScraperUtil.construct_dataframe(all_jobs=[])
 
-    def scrape(self, job_title, job_location):
+    def scrape(self, job_title, job_location, experience):
 
-        url = self.construct_url(job_title, job_location)
+        url = self.construct_url(job_title, job_location, experience)
         soup = self.get_entire_page_soup(url)
         all_job_divs = self.get_job_divs(soup)
         jobs = self.construct_job_objects(all_job_divs)
@@ -27,9 +27,9 @@ class LinkedInScraper:
         self.data = ScraperUtil.construct_dataframe(jobs)
 
     # TODO: Update method so url is changed according to provided variables.
-    def construct_url(self, search_keywords, job_location):
-
+    def construct_url(self, search_keywords, job_location, experience):
         """Constructs a LinkedIn url using the provided variables and returns it."""
+        experience_switch = self.experience_switch(experience)
 
         # Create a dictionary mapping each variable in the url to a value.
         url_vars = {'keywords': search_keywords,
@@ -37,7 +37,7 @@ class LinkedInScraper:
                     'locationId': "",
                     'geoId': '90000084',
                     'f_TPR': 'r86400',  # Ensures job listings are from the last 24 hours.
-                    'f_E': '1,2',
+                    'f_E': experience_switch,
                     'position': '1'
                     }
 
@@ -45,6 +45,17 @@ class LinkedInScraper:
         url = ('https://www.linkedin.com/jobs/search?' + urllib.parse.urlencode(url_vars))
         print("Sourcing LinkedIn data from:", url)
         return url
+
+    def experience_switch(self, experience):
+        """Converts the provided experience string to its corresponding experience url var."""
+        if experience == "entry":
+            return "1,2"
+        elif experience == "mid":
+            return "3,4"
+        elif experience == "senior":
+            return "5,6"
+        else:
+            return ""
 
     def get_entire_page_soup(self, url):
 

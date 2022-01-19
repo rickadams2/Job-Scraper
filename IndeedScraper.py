@@ -15,20 +15,23 @@ class IndeedScraper:
     def __init__(self):
         self.data = ScraperUtil.construct_dataframe(all_jobs=[])
 
-    def scrape(self, search_keywords, job_location):
-        url = self.construct_url(search_keywords, job_location)
+    def scrape(self, search_keywords, job_location, experience):
+        url = self.construct_url(search_keywords, job_location, experience)
         job_divs = self.get_all_job_divs(url)
         jobs = self.construct_job_objects(job_divs)
         self.data = ScraperUtil.construct_dataframe(jobs)
 
-    def construct_url(self, search_keywords, job_location):
+    def construct_url(self, search_keywords, job_location, experience):
         """Constructs an Indeed url using the provided variables and returns it."""
+
+        # Convert the provided experience string to its corresponding experience url var.
+        experience_switch = self.experience_switch(experience)
 
         # Create a dictionary mapping each variable in the url to a value.
         url_vars = {'q': search_keywords,
                     'l': job_location,
                     'radius': '15',
-                    'explvl': 'entry_level',
+                    'explvl': experience_switch,
                     'sort': 'date',
                     'limit': '50',
                     'fromage': '1'
@@ -39,6 +42,18 @@ class IndeedScraper:
 
         print("Sourcing Indeed data from:", url)
         return url
+
+    def experience_switch(self, experience):
+        """Converts the provided experience string to its corresponding experience url var."""
+        if experience == "entry":
+            return "entry_level"
+        elif experience == "mid":
+            return "mid_level"
+        elif experience == "senior":
+            return "senior_level"
+        else:
+            return ""
+
 
     def get_all_job_divs(self, url):
         """Retrieves html from provided url. Returns the important html containing all job information."""

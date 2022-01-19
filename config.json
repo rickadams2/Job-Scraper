@@ -1,4 +1,15 @@
 {
-"search_keywords" : "Software",
-"location" : "San Francisco Bay Area",
-"ignore_keywords" : ["Senior", "Sr ", "Lead", " II", " III", "Head", "Manager", "Director"] }
+  "search_keywords": "Software",
+  "location": "San Francisco Bay Area",
+  "experience": "Senior",
+  "ignore_keywords": [
+    "Senior",
+    "Sr ",
+    "Lead",
+    " II",
+    " III",
+    "Head",
+    "Manager",
+    "Director"
+  ]
+}
