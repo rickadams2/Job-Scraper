@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 import threading
 
@@ -14,7 +15,7 @@ def run_search(json_file_name):
 
     # Attempt to load the json file. If it isn't successful, close the program.
     try:
-        search_keywords, location, ignore_keywords, experience = load_json(json_file_name)
+        search_keywords, location, ignore_keywords, experience = load_json("./Search Configs/"+json_file_name)
     except:
         return
 
@@ -109,18 +110,17 @@ def store_in_excel_file(file_name, all_dataframes):
 
 if __name__ == "__main__":
 
-    total_args = len(sys.argv) - 1
     all_threads = []
+    for entry in os.scandir(path="./Search Configs"):
+        if entry.name.split('.')[1] == 'json':
+            all_threads.append(threading.Thread(target=run_search, args=(entry.name,)))
 
-    if total_args == 0:
-        print("Error: No arguments provided. Please provide one or more config file names as arguments.")
+    if(len(all_threads) == 0):
+        print("No json files found in 'Search Configs' directory. No search will be made.")
     else:
-        for i in range(total_args):
-            arg = str(sys.argv[i + 1])
-            all_threads.append(threading.Thread(target=run_search, args=(arg,)))
-
         for thread in all_threads:
             thread.start()
 
         for thread in all_threads:
             thread.join()
+

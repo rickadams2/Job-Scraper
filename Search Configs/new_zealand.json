@@ -1,0 +1,18 @@
+{
+  "search_keywords": "Software",
+  "location": "Wellington, Wellington Region, New Zealand",
+  "experience": "junior",
+  "ignore_keywords": [
+    "Senior",
+    "Sr ",
+    "Lead",
+    " II",
+    " III",
+    " 2",
+    " 3",
+    "Head",
+    "Manager",
+    "Director"
+  ],
+  "recipient_email": "example@example.com"
+}

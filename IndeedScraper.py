@@ -15,11 +15,12 @@ class IndeedScraper:
     def __init__(self):
         self.data = ScraperUtil.construct_dataframe(all_jobs=[])
 
-    def scrape(self, search_keywords, job_location, experience):
+    def scrape(self, search_keywords, job_location, ignore_keywords, experience):
         url = self.construct_url(search_keywords, job_location, experience)
         job_divs = self.get_all_job_divs(url)
         jobs = self.construct_job_objects(job_divs)
         self.data = ScraperUtil.construct_dataframe(jobs)
+        self.data = ScraperUtil.remove_rows_with_keywords(self.data, ignore_keywords)
 
     def construct_url(self, search_keywords, job_location, experience):
         """Constructs an Indeed url using the provided variables and returns it."""
