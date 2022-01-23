@@ -1,15 +1,18 @@
 {
-  "search_keywords": "Software Engineer",
+  "search_keywords": "Software",
   "location": "San Francisco Bay Area",
-  "experience": "Junior",
+  "experience": "junior",
   "ignore_keywords": [
     "Senior",
     "Sr ",
     "Lead",
     " II",
     " III",
+    " 2",
+    " 3",
     "Head",
     "Manager",
     "Director"
-  ]
+  ],
+  "recipient_email": "example@example.com"
 }

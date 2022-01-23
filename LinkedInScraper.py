@@ -17,16 +17,15 @@ class LinkedInScraper:
     def __init__(self):
         self.data = ScraperUtil.construct_dataframe(all_jobs=[])
 
-    def scrape(self, job_title, job_location, experience):
+    def scrape(self, search_keywords, job_location, ignore_keywords, experience):
 
-        url = self.construct_url(job_title, job_location, experience)
+        url = self.construct_url(search_keywords, job_location, experience)
         soup = self.get_entire_page_soup(url)
         all_job_divs = self.get_job_divs(soup)
         jobs = self.construct_job_objects(all_job_divs)
-        print("constructing dataframe")
         self.data = ScraperUtil.construct_dataframe(jobs)
+        self.data = ScraperUtil.remove_rows_with_keywords(self.data, ignore_keywords)
 
-    # TODO: Update method so url is changed according to provided variables.
     def construct_url(self, search_keywords, job_location, experience):
         """Constructs a LinkedIn url using the provided variables and returns it."""
         experience_switch = self.experience_switch(experience)
@@ -35,7 +34,7 @@ class LinkedInScraper:
         url_vars = {'keywords': search_keywords,
                     'location': job_location,
                     'locationId': "",
-                    'geoId': '90000084',
+                    'geoId': "",
                     'f_TPR': 'r86400',  # Ensures job listings are from the last 24 hours.
                     'f_E': experience_switch,
                     'position': '1'
@@ -58,7 +57,7 @@ class LinkedInScraper:
             return ""
 
     def get_entire_page_soup(self, url):
-
+        """Create and return a soup object from LinkedIn once the entire page is loaded."""
         # Create a web driver from the provided link.
         web_driver = webdriver.Chrome("./chromedriver")
         web_driver.get(url)
@@ -112,6 +111,7 @@ class LinkedInScraper:
                     break
 
     def get_job_divs(self, soup):
+        """Returns all 'li' divs, as they contain job information."""
         job_divs = soup.find('ul', class_="jobs-search__results-list").find_all('li')
         return job_divs
 

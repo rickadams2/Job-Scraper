@@ -4,6 +4,7 @@ import pandas as pd
 
 from ScraperUtil import ScraperUtil
 
+
 # TODO: Additional unit tests.
 class UnitTests(unittest.TestCase):
     def test_remove_rows_with_keywords_1(self):

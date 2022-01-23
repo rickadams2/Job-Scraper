@@ -54,7 +54,6 @@ class IndeedScraper:
         else:
             return ""
 
-
     def get_all_job_divs(self, url):
         """Retrieves html from provided url. Returns the important html containing all job information."""
         page = requests.get(url)
